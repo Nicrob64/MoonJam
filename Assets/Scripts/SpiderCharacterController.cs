@@ -30,6 +30,8 @@ public class SpiderCharacterController : MonoBehaviour
     private BoxCollider colide;
     public float distToGround = 0.5f;
 
+    public Transform projectileSpawner;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -133,6 +135,24 @@ public class SpiderCharacterController : MonoBehaviour
             else
             {
                 Debug.Log("Missed moon2SUFFER");
+            }
+
+            GameObject web = WebPool.SharedInstance.GetPooledObject();
+            if(web != null)
+            {
+                
+                web.transform.position = projectileSpawner.position;
+                web.SetActive(true);
+
+                Projectile p = web.GetComponent<Projectile>();
+                if (p)
+                {
+                    p.Fire(projectileSpawner.forward);
+                }
+            }
+            else
+            {
+                Debug.Log("Null?");
             }
             animator.SetTrigger("Web");
         }

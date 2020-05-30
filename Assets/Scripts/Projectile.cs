@@ -16,9 +16,15 @@ public class Projectile : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody>();
     }
 
-    void Start()
+    public void Fire(Vector3 dir)
     {
-        m_Rigidbody.AddForce(m_Rigidbody.transform.forward * speed);
-        Destroy(gameObject, lifespan);
+        m_Rigidbody.AddForce(dir * speed, ForceMode.VelocityChange);
+        StartCoroutine("Fade");
+    }
+
+    IEnumerator Fade()
+    {
+        yield return new WaitForSeconds(lifespan);
+        gameObject.SetActive(false);
     }
 }
