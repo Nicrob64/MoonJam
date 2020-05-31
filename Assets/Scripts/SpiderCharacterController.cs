@@ -7,6 +7,11 @@ using UnityEngine.UIElements;
 public class SpiderCharacterController : MonoBehaviour
 {
 
+    public static SpiderCharacterController SharedInstance;
+
+
+    private bool hasControl = true;
+
     public Animator animator;
 
     public float speed = 5;
@@ -32,6 +37,14 @@ public class SpiderCharacterController : MonoBehaviour
 
     public Transform projectileSpawner;
 
+    // private bool isOnWall = false;
+
+    private void Awake()
+    {
+        SharedInstance = this;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,13 +54,20 @@ public class SpiderCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateCharacter();
-        UpdateCamera();
-        CheckAttack();
-        CheckJump();
-        Shoot();
+        if (hasControl)
+        {
+            UpdateCharacter();
+            UpdateCamera();
+            CheckAttack();
+            CheckJump();
+            Shoot();
+        }
     }
 
+    public void SetHasControl(bool control)
+    {
+        this.hasControl = control;
+    }
 
     void CheckAttack()
     {
@@ -87,11 +107,37 @@ public class SpiderCharacterController : MonoBehaviour
         dir.z = Input.GetAxisRaw("Vertical");
         float y = Input.GetAxis("Mouse X") * turnSpeed;
 
+        dir = transform.TransformDirection(dir);
         //Debug.Log(dir.normalized);
         transform.Rotate(new Vector3(0, y, 0));
+
+        Ray r = new Ray(transform.position, dir.normalized);
+        RaycastHit hit;
+        float dist = 0.25f;
+
+
         Vector3 targetVelocity = dir.normalized * speed;
-        _rigidbody.AddRelativeForce(targetVelocity, ForceMode.VelocityChange);
+
+        if (Physics.Raycast(r, out hit, dist, LayerMask.GetMask("Environment")))
+        {
+            Debug.DrawLine(r.origin, r.origin + r.direction * dist, Color.white, 2);
+            Debug.DrawLine(hit.point, hit.point + hit.normal * dist, Color.red, 2);
+
+            float normalMagnitude = Vector3.Dot(r.direction, hit.normal);
+
+            //dir = r.direction - hit.normal * normalMagnitude;
+
+            targetVelocity = targetVelocity - (hit.normal * normalMagnitude * speed);
+
+            Debug.DrawLine(r.origin, r.origin + (r.direction - hit.normal * normalMagnitude) * dist, Color.green, 2);
+        }
+
+        
+        Debug.DrawLine(transform.position, transform.position + dir.normalized, Color.blue);
+
+        _rigidbody.AddForce(targetVelocity, ForceMode.VelocityChange);
         animator.SetFloat("Speed", _rigidbody.velocity.magnitude);
+
     }
     
 
@@ -127,14 +173,14 @@ public class SpiderCharacterController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 1000))
             {
-                Debug.DrawLine(transform.position, hit.point, Color.white, 2, false);
-                Debug.Log("Didn't miss");
-                Debug.Log(transform.position);
-                Debug.Log(hit.point);
+                //Debug.DrawLine(transform.position, hit.point, Color.white, 2, false);
+                //Debug.Log("Didn't miss");
+                //Debug.Log(transform.position);
+                //Debug.Log(hit.point);
             }
             else
             {
-                Debug.Log("Missed moon2SUFFER");
+               // Debug.Log("Missed moon2SUFFER");
             }
 
             GameObject web = WebPool.SharedInstance.GetPooledObject();
@@ -152,10 +198,9 @@ public class SpiderCharacterController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Null?");
+                Debug.LogError("The web pool is empty for some reason");
             }
             animator.SetTrigger("Web");
         }
     }
-
 }
