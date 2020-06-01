@@ -60,7 +60,7 @@ public class EnemyBehaviour : MonoBehaviour
 
                     if(SpiderCharacterController.SharedInstance != null && SpiderCharacterController.SharedInstance.GetHasControl())
                     {
-                        float step = movementSpeed * Time.deltaTime; // calculate distance to move
+                        float step = movementSpeed * Time.deltaTime * Time.timeScale; // calculate distance to move
                         transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
                         //float dist = Vector3.Distance(transform.position, target.transform.position);
                         //Debug.Log(dist);

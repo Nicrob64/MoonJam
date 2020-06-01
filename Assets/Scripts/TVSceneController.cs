@@ -47,7 +47,7 @@ public class TVSceneController : MonoBehaviour
     {
         if (isAvacadoDead)
         {
-            currentT += Time.deltaTime;
+            currentT += Time.deltaTime * Time.timeScale;
             if (currentT > targetT)
             {
                 NextScene();
@@ -55,10 +55,10 @@ public class TVSceneController : MonoBehaviour
         }
 
 
-        if (Input.GetKeyDown(KeyCode.P))
+        /*if (Input.GetKeyDown(KeyCode.P))
         {
             NextScene();
-        }
+        }*/
     }
 
     public void NextScene()

@@ -47,13 +47,12 @@ public class SpiderCharacterController : MonoBehaviour
     void Start()
     {
         colide = GetComponent<SphereCollider>();
-        UnityEngine.Cursor.visible = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hasControl)
+        if (hasControl && Time.timeScale > 0)
         {
             //UpdateCharacter();
 
@@ -151,7 +150,7 @@ public class SpiderCharacterController : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + dir.normalized, Color.blue);
 
         _rigidbody.AddForce(targetVelocity, ForceMode.VelocityChange);
-        animator.SetFloat("Speed", _rigidbody.velocity.magnitude);
+        animator.SetFloat("Speed", targetVelocity.magnitude);
 
     }
     
