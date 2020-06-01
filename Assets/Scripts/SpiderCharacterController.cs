@@ -18,7 +18,6 @@ public class SpiderCharacterController : MonoBehaviour
     public float jumpSpeed = 5;
     public float turnSpeed = 5;
 
-
     public GameObject _camera;
     public Rigidbody _rigidbody;
 
@@ -32,12 +31,11 @@ public class SpiderCharacterController : MonoBehaviour
     public float minTurnAngle = -90.0f;
     public float maxTurnAngle = 0.0f;
 
-    private BoxCollider colide;
-    public float distToGround = 0.5f;
+    private Collider colide;
+    public float distToGround = 0.1f;
 
     public Transform projectileSpawner;
 
-    // private bool isOnWall = false;
 
     private void Awake()
     {
@@ -48,7 +46,8 @@ public class SpiderCharacterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        colide = GetComponent<BoxCollider>();
+        colide = GetComponent<SphereCollider>();
+        UnityEngine.Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -56,7 +55,8 @@ public class SpiderCharacterController : MonoBehaviour
     {
         if (hasControl)
         {
-            UpdateCharacter();
+            //UpdateCharacter();
+
             UpdateCamera();
             CheckAttack();
             CheckJump();
@@ -64,10 +64,24 @@ public class SpiderCharacterController : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (hasControl)
+        {
+            UpdateCharacter();
+        }
+    }
+
     public void SetHasControl(bool control)
     {
         this.hasControl = control;
     }
+
+    public bool GetHasControl()
+    {
+        return this.hasControl;
+    }
+
 
     void CheckAttack()
     {
@@ -102,14 +116,15 @@ public class SpiderCharacterController : MonoBehaviour
 
     void UpdateCharacter()
     {
+
         Vector3 dir = new Vector3(0, 0, 0);
         dir.x = Input.GetAxisRaw("Horizontal");
         dir.z = Input.GetAxisRaw("Vertical");
-        float y = Input.GetAxis("Mouse X") * turnSpeed;
+        
 
         dir = transform.TransformDirection(dir);
         //Debug.Log(dir.normalized);
-        transform.Rotate(new Vector3(0, y, 0));
+        
 
         Ray r = new Ray(transform.position, dir.normalized);
         RaycastHit hit;
@@ -143,6 +158,9 @@ public class SpiderCharacterController : MonoBehaviour
 
     void UpdateCamera()
     {
+
+        float y = Input.GetAxis("Mouse X") * turnSpeed;
+        transform.Rotate(new Vector3(0, y, 0));
 
         //get zoom from scrollwheel
         targetDistance += Input.mouseScrollDelta.y * zoomScale *-1;

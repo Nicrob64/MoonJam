@@ -12,6 +12,7 @@ public class InteractionPanel : MonoBehaviour
 
     public static InteractionPanel SharedInstance;
     private bool visible = false;
+    private bool shouldHide = false;
 
 
     private void Awake()
@@ -20,28 +21,35 @@ public class InteractionPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void ShowInteraction(Sprite sprite, string text)
+    public IEnumerator ShowInteraction(Sprite sprite, string text)
     {
-        SpiderCharacterController.SharedInstance.SetHasControl(false);
+        //SpiderCharacterController.SharedInstance.SetHasControl(false);
         image.sprite = sprite;
         textbox.text = text;
         gameObject.SetActive(true);
         visible = true;
+        shouldHide = false;
+        while (!shouldHide)
+        {
+            yield return null; //wait for input
+        }
+        HideInteraction();
     }
 
     public void HideInteraction()
     {
         visible = false;
         gameObject.SetActive(false);
-        SpiderCharacterController.SharedInstance.SetHasControl(true);
+        //SpiderCharacterController.SharedInstance.SetHasControl(true);
     }
 
     public void Update()
     {
         if (!visible) { return; }
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            HideInteraction();
+            shouldHide = true;
+            //HideInteraction();
         }
     }
 }

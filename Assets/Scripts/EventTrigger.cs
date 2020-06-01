@@ -15,7 +15,6 @@ public class EventTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (useCollisionInsteadOfTrigger) { return; }
-        Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag.CompareTo("Player") == 0)
         {
             DoInteract();
